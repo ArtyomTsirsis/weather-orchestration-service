@@ -1,20 +1,20 @@
 package com.example.weatherorchestrationservice.utilites;
 
-import com.example.weatherorchestrationservice.dto.WeatherRequest;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @Data
 public class UrlGenerator {
 
-//    @Value(("${url.weather}"))
-    private String yrUrlBase = "https://api.met.no/weatherapi/locationforecast/2.0/compact?";
+    @Value(("${url.weather}"))
+    private String yrUrlBase;
 
-    public String generateUrl(WeatherRequest request) {
+    public String generateUrl(double lat, double lon) {
         StringBuilder sb = new StringBuilder();
-        String latitude = String.valueOf(request.getLatitude());
-        String longitude = String.valueOf(request.getLongitude());
+        String latitude = String.valueOf(lat);
+        String longitude = String.valueOf(lon);
         sb.append(yrUrlBase)
                 .append("lat=")
                 .append(latitude)

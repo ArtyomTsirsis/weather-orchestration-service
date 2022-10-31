@@ -2,7 +2,6 @@ package com.example.weatherorchestrationservice.core;
 
 import com.example.weatherorchestrationservice.client.WeatherClient;
 import com.example.weatherorchestrationservice.dto.WeatherFromYrResponse;
-import com.example.weatherorchestrationservice.dto.WeatherRequest;
 import com.example.weatherorchestrationservice.dto.WeatherResponse;
 import com.example.weatherorchestrationservice.utilites.UrlGenerator;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +15,8 @@ public class WeatherHandler {
     private final UrlGenerator generator;
     private final WeatherClient client;
 
-    public WeatherResponse getWeather(WeatherRequest request) {
-        ResponseEntity<WeatherFromYrResponse> responseEntity = client.getWeather(generator.generateUrl(request));
+    public WeatherResponse getWeather(double lat, double lon) {
+        ResponseEntity<WeatherFromYrResponse> responseEntity = client.getWeather(generator.generateUrl(lat, lon));
         if (responseEntity != null && responseEntity.getStatusCode().is2xxSuccessful()) {
             WeatherFromYrResponse yrResponse = responseEntity.getBody();
             WeatherResponse response = new WeatherResponse();
