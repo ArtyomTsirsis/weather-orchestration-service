@@ -1,7 +1,9 @@
 package com.example.weatherorchestrationservice.dto;
 
+import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
+@Data
 public class WeatherRequest {
 
     @Range(min = -90, max = 90)
