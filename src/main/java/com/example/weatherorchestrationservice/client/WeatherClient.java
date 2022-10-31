@@ -8,6 +8,5 @@ import org.springframework.stereotype.Component;
 public class WeatherClient {
 
     private final HttpClient httpClient;
-    private final String weatherUrl;
 
 }
