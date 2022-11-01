@@ -1,9 +1,6 @@
 package com.example.weatherorchestrationservice.domain;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.Column;
@@ -16,6 +13,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Entity(name = "CachedEntity")
 @Table(name = "cache")
