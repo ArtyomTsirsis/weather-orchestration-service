@@ -31,8 +31,9 @@ public class WeatherHandler {
                 response.setTemperature(yrResponse.getProperties().getTimeSeries()[0]
                         .getDataSet().getInstant().getDetails().getTemperature());
                 cachingService.saveOrUpdate(url, response.getTemperature());
+            } else {
+                throw new RequestFailedException();
             }
-            throw new RequestFailedException();
         }
         return response;
     }

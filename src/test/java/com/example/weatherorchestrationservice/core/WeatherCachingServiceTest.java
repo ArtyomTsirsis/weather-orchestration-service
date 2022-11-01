@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,6 +70,36 @@ class WeatherCachingServiceTest {
         when(repository.findById(url)).thenReturn(Optional.empty());
         CachingServiceResponse actual = service.checkCache(url);
         assertEquals(expected, actual);
+    }
+
+    /*
+     * scenario4
+     * input: "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=0&lon=0", "20.0", "Present"
+     * expected output: "update"
+     */
+    @Test
+    void scenario4() {
+        String url = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=0&lon=0";
+        double temperature = 20.0;
+        CachedEntity entity = new CachedEntity(url, temperature, LocalDateTime.now());
+        when(repository.findById(url)).thenReturn(Optional.of(entity));
+        service.saveOrUpdate(url, temperature);
+        verify(repository).updateEntity(entity);
+    }
+
+    /*
+     * scenario5
+     * input: "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=0&lon=0", "20.0", "Empty"
+     * expected output: "save"
+     */
+    @Test
+    void scenario5() {
+        String url = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=0&lon=0";
+        double temperature = 20.0;
+        CachedEntity entity = new CachedEntity(url, temperature, LocalDateTime.now());
+        when(repository.findById(url)).thenReturn(Optional.empty());
+        service.saveOrUpdate(url, temperature);
+        verify(repository).save(entity);
     }
 
 }

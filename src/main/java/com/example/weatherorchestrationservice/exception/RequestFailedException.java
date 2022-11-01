@@ -1,4 +1,3 @@
 package com.example.weatherorchestrationservice.exception;
 
-public class RequestFailedException extends RuntimeException {
-}
+public class RequestFailedException extends RuntimeException { }
