@@ -1,7 +1,6 @@
 package com.example.weatherorchestrationservice.client;
 
 import com.example.weatherorchestrationservice.dto.WeatherFromYrResponse;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-@Data
 @RequiredArgsConstructor
 public class WeatherClient {
 

@@ -13,7 +13,7 @@ public interface CachingRepository extends JpaRepository<CachedEntity, String> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE CachedEntity u SET temperature = :#{#e.temperature}, creationTime = :#{#e.creationTime} WHERE url = :#{#e.url}")
+    @Query("UPDATE CachedEntity SET temperature = :#{#e.temperature}, creationTime = :#{#e.creationTime} WHERE url = :#{#e.url}")
     void updateEntity(@Param("e") CachedEntity entity);
 
 }

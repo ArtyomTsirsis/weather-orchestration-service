@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,23 +16,21 @@ public class WeatherCachingService {
 
     public CachingServiceResponse checkCache(String url) {
         CachingServiceResponse response = new CachingServiceResponse();
-        Optional<CachedEntity> cached = repository.findById(url);
-        if (cached.isPresent() && cached.get().getCreationTime().isAfter(LocalDateTime.now().minusHours(1))) {
-            response.setCacheValid(true);
-            response.setTemperature(cached.get().getTemperature());
-        } else {
-            response.setCacheValid(false);
-        }
+        repository.findById(url)
+                .filter(cached -> cached.getCreationTime().isAfter(LocalDateTime.now().minusHours(1)))
+                .ifPresentOrElse(cached -> setCacheValidResponse(response, cached.getTemperature()),
+                () -> response.setCacheValid(false));
         return response;
     }
 
     public void saveOrUpdate(String url, double temperature) {
         CachedEntity entity = new CachedEntity(url, temperature, LocalDateTime.now());
-        if (repository.findById(url).isEmpty()) {
-            repository.save(entity);
-        } else {
-            repository.updateEntity(entity);
-        }
+        repository.findById(url).ifPresentOrElse(o -> repository.updateEntity(entity), () -> repository.save(entity));
+    }
+
+    private void setCacheValidResponse(CachingServiceResponse response, double temperature) {
+        response.setCacheValid(true);
+        response.setTemperature(temperature);
     }
 
 }

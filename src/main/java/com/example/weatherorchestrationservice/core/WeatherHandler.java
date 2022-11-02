@@ -32,7 +32,7 @@ public class WeatherHandler {
                         .getDataSet().getInstant().getDetails().getTemperature());
                 cachingService.saveOrUpdate(url, response.getTemperature());
             } else {
-                throw new RequestFailedException();
+                throw new RequestFailedException("RequestFromWeatherServerFailed");
             }
         }
         return response;
