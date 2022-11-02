@@ -1,14 +1,17 @@
 package com.example.weatherorchestrationservice.core;
 
 import com.example.weatherorchestrationservice.client.WeatherClient;
+import com.example.weatherorchestrationservice.domain.*;
 import com.example.weatherorchestrationservice.dto.CachingServiceResponse;
 import com.example.weatherorchestrationservice.dto.WeatherFromYrResponse;
 import com.example.weatherorchestrationservice.dto.WeatherResponse;
-import com.example.weatherorchestrationservice.exception.RequestFailedException;
+import com.example.weatherorchestrationservice.exception.MappingFailedException;
 import com.example.weatherorchestrationservice.utilites.UrlGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,22 +23,27 @@ public class WeatherHandler {
 
     public WeatherResponse getWeather(double lat, double lon) {
         String url = generator.generateUrl(lat, lon);
-        WeatherResponse response = new WeatherResponse();
         CachingServiceResponse cashingResponse = cachingService.checkCache(url);
         if (cashingResponse.isCacheValid()) {
-            response.setTemperature(cashingResponse.getTemperature());
-        } else {
-            ResponseEntity<WeatherFromYrResponse> responseEntity = client.getWeather(url);
-            if (responseEntity != null && responseEntity.getStatusCode().is2xxSuccessful()) {
-                WeatherFromYrResponse yrResponse = responseEntity.getBody();
-                response.setTemperature(yrResponse.getProperties().getTimeSeries()[0]
-                        .getDataSet().getInstant().getDetails().getTemperature());
-                cachingService.saveOrUpdate(url, response.getTemperature());
-            } else {
-                throw new RequestFailedException("RequestFromWeatherServerFailed");
-            }
+            return new WeatherResponse(cashingResponse.getTemperature());
         }
-        return response;
+        ResponseEntity<WeatherFromYrResponse> responseEntity = client.getWeather(url);
+        double temperature = getTemperatureFromYrResponse(responseEntity.getBody());
+        cachingService.saveOrUpdate(url, temperature);
+        return new WeatherResponse(temperature);
+    }
+
+    private double getTemperatureFromYrResponse(WeatherFromYrResponse response) {
+        return Optional.ofNullable(response)
+                .map(WeatherFromYrResponse::getProperties)
+                .map(Properties::getTimeSeries)
+                .filter(t -> t.length != 0)
+                .map(t -> t[0])
+                .map(TimeSeries::getDataSet)
+                .map(DataSet::getInstant)
+                .map(Instant::getDetails)
+                .map(Details::getTemperature)
+                .orElseThrow(() -> new MappingFailedException("Mapping from Yr ResponseEntity failed"));
     }
 
 }

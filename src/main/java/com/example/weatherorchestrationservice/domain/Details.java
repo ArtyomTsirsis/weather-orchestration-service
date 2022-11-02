@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 public class Details {
 
     @JsonProperty("air_temperature")
-    private double temperature;
+    private Double temperature;
 
 }

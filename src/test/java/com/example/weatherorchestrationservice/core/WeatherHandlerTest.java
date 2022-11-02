@@ -5,7 +5,7 @@ import com.example.weatherorchestrationservice.domain.*;
 import com.example.weatherorchestrationservice.dto.CachingServiceResponse;
 import com.example.weatherorchestrationservice.dto.WeatherFromYrResponse;
 import com.example.weatherorchestrationservice.dto.WeatherResponse;
-import com.example.weatherorchestrationservice.exception.RequestFailedException;
+import com.example.weatherorchestrationservice.exception.MappingFailedException;
 import com.example.weatherorchestrationservice.utilites.UrlGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,7 +77,7 @@ class WeatherHandlerTest {
     /*
      * scenario3
      * input: "0.0", "0.0"
-     * expected output: "RequestFailedException"
+     * expected output: "MappingFailedException"
      */
     @Test
     void scenario3() {
@@ -84,33 +85,11 @@ class WeatherHandlerTest {
         double temperature = 20.0;
         CachingServiceResponse cacheResponse = new CachingServiceResponse();
         cacheResponse.setCacheValid(false);
-        ResponseEntity<WeatherFromYrResponse> entity = null;
+        ResponseEntity<WeatherFromYrResponse> entity = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         when(generator.generateUrl(0.0, 0.0)).thenReturn(url);
         when(service.checkCache(url)).thenReturn(cacheResponse);
         when(client.getWeather(url)).thenReturn(entity);
-        assertThrows(RequestFailedException.class, () -> {
-            handler.getWeather(0.0, 0.0);
-        });
-    }
-
-    /*
-     * scenario4
-     * input: "0.0", "0.0"
-     * expected output: "RequestFailedException"
-     */
-    @Test
-    void scenario4() {
-        String url = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=0&lon=0";
-        double temperature = 20.0;
-        CachingServiceResponse cacheResponse = new CachingServiceResponse();
-        cacheResponse.setCacheValid(false);
-        WeatherFromYrResponse weatherResponse = new WeatherFromYrResponse();
-        weatherResponse.setProperties(new Properties(new TimeSeries[]{new TimeSeries(new DataSet(new Instant(new Details(temperature))))}));
-        ResponseEntity<WeatherFromYrResponse> entity = new ResponseEntity<>(weatherResponse, HttpStatus.BAD_REQUEST);
-        when(generator.generateUrl(0.0, 0.0)).thenReturn(url);
-        when(service.checkCache(url)).thenReturn(cacheResponse);
-        when(client.getWeather(url)).thenReturn(entity);
-        assertThrows(RequestFailedException.class, () -> {
+        assertThrows(MappingFailedException.class, () -> {
             handler.getWeather(0.0, 0.0);
         });
     }
