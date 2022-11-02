@@ -1,5 +1,5 @@
 How to run Weather-orchestration-service app.
-1. Specify User-Agent in Environment Variables like <User-Agent=[your user agent];>
+1. Specify User-Agent in Environment Variables in IDE Run Configurations like <User-Agent=[your user agent];>
 2. Specify port in config.properties(default port is 8083)
 3. Run WeatherOrchestrationServerApplication main method
 4. Endpoint to request - http://localhost:[your port]/weather?lat=[your latitude]&lon=[your longitude]
