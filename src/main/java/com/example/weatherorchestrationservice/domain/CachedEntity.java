@@ -23,7 +23,7 @@ public class CachedEntity {
     private String url;
     @Column
     private double temperature;
-    @Column
+    @Column(name = "creation_time")
     private LocalDateTime creationTime;
 
     @Override

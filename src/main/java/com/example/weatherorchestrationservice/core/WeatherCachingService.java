@@ -4,6 +4,7 @@ import com.example.weatherorchestrationservice.domain.CachedEntity;
 import com.example.weatherorchestrationservice.dto.CachingServiceResponse;
 import com.example.weatherorchestrationservice.repository.CachingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,6 +32,11 @@ public class WeatherCachingService {
     private void setCacheValidResponse(CachingServiceResponse response, double temperature) {
         response.setCacheValid(true);
         response.setTemperature(temperature);
+    }
+
+    @Scheduled(fixedRate = 108000000)
+    private void cleanExpiredCache() {
+        repository.findByCreationTimeBefore(LocalDateTime.now().minusHours(1)).forEach(repository::delete);
     }
 
 }
