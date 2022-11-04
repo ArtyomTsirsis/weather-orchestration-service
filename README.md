@@ -13,4 +13,5 @@ Technologies used:
 2. Gradle
 3. Spring Boot
 4. In-Memory DataBase H2
-5. Lombok
+5. Liquibase
+6. Lombok
