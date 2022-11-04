@@ -35,7 +35,7 @@ public class WeatherCachingService {
     }
 
     @Scheduled(fixedRate = 108000000)
-    private void cleanExpiredCache() {
+    void cleanExpiredCache() {
         repository.findByCreationTimeBefore(LocalDateTime.now().minusHours(1)).forEach(repository::delete);
     }
 

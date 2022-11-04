@@ -10,13 +10,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class})
 class WeatherCachingServiceTest {
 
     @Mock
@@ -100,6 +102,22 @@ class WeatherCachingServiceTest {
         when(repository.findById(url)).thenReturn(Optional.empty());
         service.saveOrUpdate(url, temperature);
         verify(repository).save(entity);
+    }
+
+    /*
+     * scenario6
+     * input: "cachedEntity"
+     * expected output: "delete"
+     */
+    @Test
+    void scenario6() {
+        String url = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=0&lon=0";
+        double temperature = 20.0;
+        CachedEntity entity = new CachedEntity(url, temperature, LocalDateTime.now().minusHours(2));
+        List<CachedEntity> cachedList = List.of(entity);
+        when(repository.findByCreationTimeBefore(any(LocalDateTime.class))).thenReturn(cachedList);
+        service.cleanExpiredCache();
+        verify(repository).delete(entity);
     }
 
 }
