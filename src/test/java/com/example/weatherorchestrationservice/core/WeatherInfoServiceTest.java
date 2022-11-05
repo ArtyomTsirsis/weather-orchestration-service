@@ -20,16 +20,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class WeatherHandlerTest {
+class WeatherInfoServiceTest {
 
     @Mock
     private UrlGenerator generator;
     @Mock
-    private WeatherCachingService service;
+    private WeatherCachingService cachingService;
     @Mock
     private WeatherClient client;
     @InjectMocks
-    private WeatherHandler handler;
+    private WeatherInfoService infoService;
 
     /*
      * scenario1
@@ -44,10 +44,10 @@ class WeatherHandlerTest {
         cacheResponse.setCacheValid(true);
         cacheResponse.setTemperature(temperature);
         when(generator.generateUrl(0.0, 0.0)).thenReturn(url);
-        when(service.checkCache(url)).thenReturn(cacheResponse);
+        when(cachingService.checkCache(url)).thenReturn(cacheResponse);
         WeatherResponse expected = new WeatherResponse();
         expected.setTemperature(temperature);
-        WeatherResponse actual = handler.getWeather(0.0, 0.0);
+        WeatherResponse actual = infoService.getWeather(0.0, 0.0);
         assertEquals(expected, actual);
     }
 
@@ -66,11 +66,11 @@ class WeatherHandlerTest {
         weatherResponse.setProperties(new Properties(new TimeSeries[]{new TimeSeries(new DataSet(new Instant(new Details(temperature))))}));
         ResponseEntity<WeatherFromYrResponse> entity = new ResponseEntity<>(weatherResponse, HttpStatus.OK);
         when(generator.generateUrl(0.0, 0.0)).thenReturn(url);
-        when(service.checkCache(url)).thenReturn(cacheResponse);
+        when(cachingService.checkCache(url)).thenReturn(cacheResponse);
         when(client.getWeather(url)).thenReturn(entity);
         WeatherResponse expected = new WeatherResponse();
         expected.setTemperature(temperature);
-        WeatherResponse actual = handler.getWeather(0.0, 0.0);
+        WeatherResponse actual = infoService.getWeather(0.0, 0.0);
         assertEquals(expected, actual);
     }
 
@@ -87,10 +87,10 @@ class WeatherHandlerTest {
         cacheResponse.setCacheValid(false);
         ResponseEntity<WeatherFromYrResponse> entity = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         when(generator.generateUrl(0.0, 0.0)).thenReturn(url);
-        when(service.checkCache(url)).thenReturn(cacheResponse);
+        when(cachingService.checkCache(url)).thenReturn(cacheResponse);
         when(client.getWeather(url)).thenReturn(entity);
         assertThrows(MappingFailedException.class, () -> {
-            handler.getWeather(0.0, 0.0);
+            infoService.getWeather(0.0, 0.0);
         });
     }
 

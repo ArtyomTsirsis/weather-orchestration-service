@@ -14,18 +14,20 @@ import org.springframework.web.client.HttpClientErrorException;
 @RequiredArgsConstructor
 public class WeatherClient extends HttpClient {
 
-    private final String siteName = System.getenv("User-Agent");
+    private static final String SITE_NAME = System.getenv("User-Agent");
 
     public ResponseEntity<WeatherFromYrResponse> getWeather(String url) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("User-Agent", siteName);
+        headers.add("User-Agent", SITE_NAME);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         ResponseEntity<WeatherFromYrResponse> response;
         try {
             response = exchange(url, HttpMethod.GET, entity, WeatherFromYrResponse.class);
         }
         catch (HttpClientErrorException exception) {
-            throw  new RequestFailedException(String.format("Request to Yr failed: %d. %s", exception.getRawStatusCode(), exception.getStatusText()));
+            throw  new RequestFailedException(String.format("Request to Yr failed: %d. %s",
+                            exception.getRawStatusCode(),
+                            exception.getStatusText()));
         }
         return response;
     }

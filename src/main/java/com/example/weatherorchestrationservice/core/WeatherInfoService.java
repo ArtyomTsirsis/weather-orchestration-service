@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class WeatherHandler {
+public class WeatherInfoService {
 
     private final UrlGenerator generator;
     private final WeatherClient client;
